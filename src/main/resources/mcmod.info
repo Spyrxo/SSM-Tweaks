@@ -1,0 +1,16 @@
+[
+  {
+    "modid": "ssmtweaks",
+    "name": "SSMTweaks",
+    "description": "Essential fixes, Qol additions, and tid-bits to enhance your ssm gaming experience!",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "url": "",
+    "updateUrl": "",
+    "authorList": ["Spyrxo"],
+    "credits": "Spyrxo",
+    "logoFile": "",
+    "screenshots": [],
+    "dependencies": []
+  }
+]

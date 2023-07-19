@@ -1,0 +1,88 @@
+/*
+ * SSM Tweaks gradle
+ * Author: Spyrxo (Jam)
+ *
+ * build file location in build/libs/
+ */
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+        maven {
+            name = "forge"
+            url = "http://files.minecraftforge.net/maven"
+        }
+    }
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
+    }
+}
+
+apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'java'
+
+sourceCompatibility = 1.8 // using java 8
+targetCompatibility = 1.8
+
+group 'xyz.gholemgaeming'
+version '1.0'
+archivesBaseName= "SSMTweaks" // name of the output jar
+
+minecraft {
+    version = "1.8.9-11.15.1.2318-1.8.9"
+    runDir = "run"
+
+    // the mappings can be changed at any time, and must be in the following format.
+    // snapshot_YYYYMMDD   snapshot are built nightly.
+    // stable_#            stables are built at the discretion of the MCP team.
+    // Use non-default mappings at your own risk. they may not allways work.
+    // simply re-run your setup task after changing the mappings to update your workspace.
+    mappings = "stable_22" // mappings for 1.8.9
+    makeObfSourceJar = false // disable creation of sources jar
+}
+
+configurations {
+    shade
+    compile.extendsFrom(shade)
+}
+
+repositories {
+    //repos for libraries (not gradle plugins)
+    //example:
+    //maven { url "https://repo.reponame/" }
+}
+
+dependencies {
+    //shade will bundle your library to the output jar
+    //your libraries will be accessible outside of intellij
+    //example:
+    //shade "something.reponame:repoType:1.0"
+
+    //compile will make your library available only in this dev environment
+    //your libraries wont be accessible outside of intellij
+    //example:
+    //compile "something.reponame:repoType:1.0"
+
+    // for more info...
+    // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
+    // http://www.gradle.org/docs/current/userguide/dependency_management.html
+}
+
+processResources {
+    //this will ensure that this task is redone when the versions change.
+    inputs.property "version", project.version
+    inputs.property "mcversion", project.minecraft.version
+
+    //replace stuff in mcmod.info, nothing else
+    from(sourceSets.main.resources.srcDirs) {
+        include "mcmod.info"
+
+        //replace version and mcversion
+        expand "version":project.version, "mcversion":project.minecraft.version
+    }
+
+    //copy everything else, that"s not the mcmod.info
+    from(sourceSets.main.resources.srcDirs) {
+        exclude "mcmod.info"
+    }
+}
