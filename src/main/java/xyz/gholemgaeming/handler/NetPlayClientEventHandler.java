@@ -18,7 +18,7 @@ import xyz.gholemgaeming.client.CustomNetHandlerPlayClient;
 
 @SideOnly(Side.CLIENT)
 public class NetPlayClientEventHandler {
-
+    
     /** Has the mod told the player in chat if it is allowed on the server? **/
     private boolean hasInformedPlayerOfModLoad = false;
 
@@ -91,10 +91,12 @@ public class NetPlayClientEventHandler {
             hasInformedPlayerOfModLoad = true; // we no longer want to keep informing if they join other worlds on the same server
 
             // inform via chat message
-            String chatMessage = SSMTweaks.theMasterModBoolean ?
-                    EnumChatFormatting.GRAY + "[" + EnumChatFormatting.GREEN + "o" + EnumChatFormatting.GRAY + "] " + EnumChatFormatting.WHITE + "SSM-Tweaks loaded" :
-                    EnumChatFormatting.GRAY + "[" + EnumChatFormatting.RED + "x" + EnumChatFormatting.GRAY + "] " + EnumChatFormatting.WHITE + "SSM-Tweaks not allowed";
-            SSMTweaks.getClientPlayer().addChatMessage(new ChatComponentText(chatMessage));
+            if (SSMTweaks.getClientPlayer() != null) {
+                String chatMessage = SSMTweaks.theMasterModBoolean ?
+                        EnumChatFormatting.GRAY + "[" + EnumChatFormatting.GREEN + "o" + EnumChatFormatting.GRAY + "] " + EnumChatFormatting.WHITE + "SSM-Tweaks loaded" :
+                        EnumChatFormatting.GRAY + "[" + EnumChatFormatting.RED + "x" + EnumChatFormatting.GRAY + "] " + EnumChatFormatting.WHITE + "SSM-Tweaks not allowed";
+                SSMTweaks.getClientPlayer().addChatMessage(new ChatComponentText(chatMessage));
+            }
         }
     }
 
