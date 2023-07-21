@@ -59,8 +59,24 @@ public class NetPlayClientEventHandler {
     @SubscribeEvent
     public void onClientConnectToServerCheckIfAllowedToRunMod(FMLNetworkEvent.ClientConnectedToServerEvent e) {
 
+        // we don't want the mod working locally, as it affects regular gameplay,
+        // so just keep it turned off
+        if (e.isLocal) {
+            SSMTweaks.theMasterModBoolean = false;
+            SSMTweaks.modLogger.log(Level.INFO, "Client connected to a local server, ssm tweaks disabled");
+            return;
+        }
+
         // joining a new server
         String connectedServerIP = Minecraft.getMinecraft().getCurrentServerData().serverIP;
+
+        // if we cannot verify the server ip, then by default just keep the mod off
+        if (connectedServerIP == null) {
+            SSMTweaks.theMasterModBoolean = false;
+            SSMTweaks.modLogger.log(Level.INFO, "Could not verify server ip, ssm tweaks disabled");
+            return;
+        }
+
         hasInformedPlayerOfModLoad = false;
 
         // determine if the mod will handle tweaks to the current server
