@@ -5,6 +5,7 @@ import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.network.INetHandler;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.IChatComponent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -18,7 +19,13 @@ import xyz.gholemgaeming.client.CustomNetHandlerPlayClient;
 @SideOnly(Side.CLIENT)
 public class NetPlayClientEventHandler {
 
-    private boolean hasInformedPlayerOfModLoad;
+    /** Has the mod told the player in chat if it is allowed on the server? **/
+    private boolean hasInformedPlayerOfModLoad = false;
+
+    /** {@link IChatComponent} text for the {@link net.minecraft.client.gui.GuiPlayerTabOverlay} custom
+     * render instance which is called inside of {@link GameUIDisplayHandler} class when showing the tab bar. **/
+    public IChatComponent tabListHeader;
+    public IChatComponent tabListFooter;
 
     /** Event called every tick by the client while the game is active. This handler
      * checks to make sure the player is in a valid world instance, and then attempts
@@ -78,6 +85,8 @@ public class NetPlayClientEventHandler {
      * **/
     @SubscribeEvent
     public void onClientJoinWorldInstanceInformUser(EntityJoinWorldEvent e) {
+        if (e.world == null) return;
+
         if (!hasInformedPlayerOfModLoad) {
             hasInformedPlayerOfModLoad = true; // we no longer want to keep informing if they join other worlds on the same server
 

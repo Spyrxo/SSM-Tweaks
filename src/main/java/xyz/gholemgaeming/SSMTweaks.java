@@ -2,6 +2,7 @@ package xyz.gholemgaeming;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
@@ -10,9 +11,9 @@ import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import xyz.gholemgaeming.command.CommandChangeEntityDistRenderValue;
-import xyz.gholemgaeming.command.CommandToggleDebug;
-import xyz.gholemgaeming.command.CommandToggleEntityDistRender;
+import xyz.gholemgaeming.command.*;
+import xyz.gholemgaeming.handler.DisguisePlayerHandler;
+import xyz.gholemgaeming.handler.GameUIDisplayHandler;
 import xyz.gholemgaeming.handler.LongDistanceEntityHandler;
 import xyz.gholemgaeming.handler.NetPlayClientEventHandler;
 
@@ -37,6 +38,12 @@ public class SSMTweaks {
     @Mod.Instance
     public static SSMTweaks MOD_INSTANCE;
 
+    public static NetPlayClientEventHandler netPlayClientHandler;
+    public static DisguisePlayerHandler disguisePlayerHandler;
+
+    public static int test = 9;
+    public static int test2 = 45;
+
     /** Is the mod allowed to even run its tweaks and logic on the currently connected server?
      * (the boolean to behold against all other booleans, nothing is immune to its power!) **/
     public static boolean theMasterModBoolean = false;
@@ -52,6 +59,9 @@ public class SSMTweaks {
     /** Is the mod allowed to handle how entities are rendered? **/
     public static boolean allowCustomRenderDistance = true;
 
+    /** Is the mod allowed to render the game time at the top of the screen? **/
+    public static boolean allowOnScreenGameTimer = true;
+
     /** Are we checking for spicy bugs? **/
     public static boolean debugMode = false;
 
@@ -66,13 +76,20 @@ public class SSMTweaks {
     public void init(FMLInitializationEvent e) {
 
         // register and load our listeners - allows the mod to handle event based logic
-        MinecraftForge.EVENT_BUS.register(new NetPlayClientEventHandler());
+        netPlayClientHandler = new NetPlayClientEventHandler();
+        MinecraftForge.EVENT_BUS.register(netPlayClientHandler);
         MinecraftForge.EVENT_BUS.register(new LongDistanceEntityHandler());
+        MinecraftForge.EVENT_BUS.register(new GameUIDisplayHandler());
+
+        disguisePlayerHandler = new DisguisePlayerHandler();
+        MinecraftForge.EVENT_BUS.register(disguisePlayerHandler);
 
         // register and load our commands - allow the player to control aspects of the mod in-game
         ClientCommandHandler.instance.registerCommand(new CommandToggleDebug());
+        ClientCommandHandler.instance.registerCommand(new CommandTest());
         ClientCommandHandler.instance.registerCommand(new CommandChangeEntityDistRenderValue());
         ClientCommandHandler.instance.registerCommand(new CommandToggleEntityDistRender());
+        ClientCommandHandler.instance.registerCommand(new CommandToggleOnScreenGameTime());
     }
 
     /** Event called after the {@link net.minecraftforge.fml.common.event.FMLPostInitializationEvent}
@@ -89,6 +106,11 @@ public class SSMTweaks {
         allowCustomRenderDistance = allow;
     }
 
+    /** Are we allowing the mod to display the on-screen game timer? **/
+    public static void setShowingOnScreenGameTimer(boolean allow) {
+        allowOnScreenGameTimer = allow;
+    }
+
     /** Are we doing the spooky? **/
     public static void setDebugMode(boolean allow) {
         debugMode = allow;
@@ -98,6 +120,11 @@ public class SSMTweaks {
      * (the user who is enjoying the mod!) **/
     public static EntityPlayerSP getClientPlayer() {
         return Minecraft.getMinecraft().thePlayer;
+    }
+
+    /** @return {@link ResourceLocation} for {@link SSMTweaks}. **/
+    public static ResourceLocation getResource(String resourceName) {
+        return new ResourceLocation(MOD_ID, resourceName);
     }
 
     /** Returns True/False depending on if the mod is allowed to tweak the client-side gameplay.
@@ -118,6 +145,8 @@ public class SSMTweaks {
                     return allowCustomRenderDistance;
                 case ENTITY_SPECIFIC_FIXES:
                     return allowCustomEntityFixes;
+                case GAME_ONSCREEN_TIMER:
+                    return allowOnScreenGameTimer;
             }
         }
 
@@ -131,6 +160,7 @@ public class SSMTweaks {
 
         ENTITY_RENDER_DISTANCE,
         ENTITY_SPECIFIC_FIXES,
+        GAME_ONSCREEN_TIMER,
         ;
     }
 

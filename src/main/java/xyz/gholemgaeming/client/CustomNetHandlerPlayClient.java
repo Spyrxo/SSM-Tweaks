@@ -215,6 +215,7 @@ public class CustomNetHandlerPlayClient extends NetHandlerPlayClient {
     public void handleJoinGame(S01PacketJoinGame p_147282_1_) {
         this.parentInstance.handleJoinGame(p_147282_1_);
     }
+
     public void handleSpawnExperienceOrb(S11PacketSpawnExperienceOrb p_147286_1_) {
         this.parentInstance.handleSpawnExperienceOrb(p_147286_1_);
     }
@@ -428,6 +429,12 @@ public class CustomNetHandlerPlayClient extends NetHandlerPlayClient {
     }
 
     public void handlePlayerListHeaderFooter(S47PacketPlayerListHeaderFooter packetIn) {
+
+        // first, we need to set these IChatComponent header/footer functions
+        // this is because our custom tab list UI display needs this data, but its private in the GuiTabList class
+        // so instead of using slow reflection to access those fields, instead we can just pull the data from here
+        SSMTweaks.netPlayClientHandler.tabListHeader = packetIn.getHeader().getFormattedText().length() == 0 ? null : packetIn.getHeader();
+        SSMTweaks.netPlayClientHandler.tabListFooter = packetIn.getFooter().getFormattedText().length() == 0 ? null : packetIn.getFooter();
         this.parentInstance.handlePlayerListHeaderFooter(packetIn);
     }
 
